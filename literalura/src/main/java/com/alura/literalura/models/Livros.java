@@ -11,7 +11,9 @@ public class Livros {
 
     @Column
     private String titulo;
-    private String autor;
+    @ManyToOne
+    @JoinColumn(name = "autor_id")
+    private Autores autor;
     private String idioma;
     private Integer downloads;
 
@@ -19,19 +21,12 @@ public class Livros {
 
     public Livros() {}
 
-    public Livros(DadosLivros dadosLivros) {
+    public Livros(DadosLivros dadosLivros, Autores autor) {
         this.titulo = dadosLivros.titulo();
-
-        // pega o primeiro autor (regra de negócio simples)
-        this.autor = dadosLivros.autor() != null && !dadosLivros.autor().isEmpty()
-                ? dadosLivros.autor().get(0).nome()
-                : "Autor desconhecido";
-
-        // junta idiomas em uma string
+        this.autor = autor;
         this.idioma = dadosLivros.idioma() != null
                 ? String.join(", ", dadosLivros.idioma())
                 : null;
-
         this.downloads = dadosLivros.downloads();
     }
 
@@ -53,11 +48,11 @@ public class Livros {
         this.titulo = titulo;
     }
 
-    public String getAutor() {
+    public Autores getAutor() {
         return autor;
     }
 
-    public void setAutor(String autor) {
+    public void setAutor(Autores autor) {
         this.autor = autor;
     }
 
@@ -85,6 +80,6 @@ public class Livros {
                 Autor: %s
                 Idioma: %s
                 Número de downloads: %s
-                """.formatted(titulo, autor, idioma, downloads);
+                """.formatted(titulo, autor.getNome(), idioma, downloads);
     }
 }
